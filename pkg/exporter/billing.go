@@ -185,7 +185,7 @@ func (c *BillingCollector) Collect(ch chan<- prometheus.Metric) {
 	}
 }
 
-// Enhanced billing platform structures - v5.0.0
+// UsageItem represents a billing usage item from GitHub Enhanced Billing Platform API
 type UsageItem struct {
 	Date             string  `json:"date"`
 	Product          string  `json:"product"`
@@ -203,6 +203,7 @@ type UsageItem struct {
 	Name string // organization or enterprise name
 }
 
+// UsageResponse represents the response from GitHub Enhanced Billing Platform API
 type UsageResponse struct {
 	UsageItems []UsageItem `json:"usageItems"`
 }
@@ -216,13 +217,13 @@ func (c *BillingCollector) getBillingUsage() []UsageItem {
 
 	// Fetch billing data for enterprises
 	for _, name := range c.config.Enterprises {
-		items := c.fetchBillingUsageForEntity("enterprise", name, ctx)
+		items := c.fetchBillingUsageForEntity(ctx, "enterprise", name)
 		result = append(result, items...)
 	}
 
 	// Fetch billing data for organizations
 	for _, name := range c.config.Orgs {
-		items := c.fetchBillingUsageForEntity("org", name, ctx)
+		items := c.fetchBillingUsageForEntity(ctx, "org", name)
 		result = append(result, items...)
 	}
 
@@ -230,7 +231,7 @@ func (c *BillingCollector) getBillingUsage() []UsageItem {
 }
 
 // fetchBillingUsageForEntity fetches billing usage for a specific entity (org or enterprise)
-func (c *BillingCollector) fetchBillingUsageForEntity(entityType, name string, ctx context.Context) []UsageItem {
+func (c *BillingCollector) fetchBillingUsageForEntity(ctx context.Context, entityType, name string) []UsageItem {
 	var endpoint string
 	if entityType == "enterprise" {
 		endpoint = fmt.Sprintf("/enterprises/%s/settings/billing/usage", name)
