@@ -341,7 +341,7 @@ func (c *BillingCollector) getActionBilling() []*actionBilling {
 	for _, name := range c.config.Enterprises {
 		req, err := c.client.NewRequest(
 			"GET",
-			fmt.Sprintf("/enterprises/%s/settings/billing/actions", name),
+			fmt.Sprintf("/enterprises/%s/settings/billing/usage", name),
 			nil,
 		)
 
